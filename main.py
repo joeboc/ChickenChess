@@ -53,10 +53,17 @@ while running:
             col = mouse_x // square_size
             row = mouse_y // square_size
 
-            if selected_square == (row, col):
+            if selected_square:
+                src_row, src_col = selected_square
+                dst_row, dst_col = row, col
+
+                piece = board[src_row][src_col]
+                board[dst_row][dst_col] = piece
+                board[src_row][src_col] = ""
                 selected_square = None
             else:
-                selected_square = (row, col)
+                if board[row][col] != "":
+                    selected_square = (row, col)
 
     # ChessBoard
     for row in range(8):
