@@ -8,6 +8,46 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chicken Chess")
 clock = pygame.time.Clock()
 
+def get_valid_moves(board, row, col):
+    piece = board[row][col]
+    moves = []
+
+    if piece == "":
+        return moves
+
+    color = piece[0]
+    kind = piece[1]
+    direction = -1 if color =="W" else 1
+
+    if kind == "P":
+        if board[row + direction][col] == "":
+            moves.append((row + direction, col))
+
+            if(color == "W" and row == 6) or (color == "B" and row == 1):
+                if board[row + 2 * direction][col] == "":
+                    moves.append((row + 2 * direction, col))
+        
+        if col > 0 and board[row + direction][col - 1].startswith("W" if color == "B" else "B"):
+            moves.append((row + direction, col-1))
+        if col < 7 and board[row + direction][col + 1].startswith("W" if color == "B" else "B"):
+            moves.append((row + direction, col + 1))
+    
+    elif kind == "N":
+        knight_moves = [
+            (row + 2, col + 1), (row + 2, col - 1),
+            (row - 2, col + 1), (row - 2, col - 1),
+            (row + 1, col + 2), (row - 1, col + 2),
+            (row - 1, col + 2), (row - 1, col - 2)
+        ]
+
+        for r, c in knight_moves:
+            if 0 <= r < 8 and 0 <= c < 8:
+                target = board[r][c]
+                if target == "" or target[0] != color:
+                    moves.append((r, c))
+
+    return moves
+
 def load_image(name):
     img = pygame.image.load(f"assets/{name}.png")
     return pygame.transform.scale(img, (square_size, square_size))
@@ -55,16 +95,16 @@ while running:
 
             if selected_square:
                 src_row, src_col = selected_square
-                dst_row, dst_col = row, col
-
                 piece = board[src_row][src_col]
-                board[dst_row][dst_col] = piece
-                board[src_row][src_col] = ""
+                valid_moves = get_valid_moves(board, src_row, src_col)
+
+                if (row, col) in valid_moves:
+                    board[row][col] = piece
+                    board[src_row][src_col] = ""
                 selected_square = None
             else:
                 if board[row][col] != "":
                     selected_square = (row, col)
-
     # ChessBoard
     for row in range(8):
         for col in range(8):
