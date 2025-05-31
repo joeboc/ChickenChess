@@ -45,6 +45,24 @@ def get_valid_moves(board, row, col):
                 target = board[r][c]
                 if target == "" or target[0] != color:
                     moves.append((r, c))
+    
+    elif kind == "B":
+        directions = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+
+        for dr, dc in directions:
+            r, c = row + dr, col + dc
+            while 0 <= r < 8 and 0 <= c < 8:
+                target = board[r][c]
+                if target == "":
+                    moves.append((r, c))
+                elif target[0] != color:
+                    moves.append((r, c))  # Capture
+                    break
+                else:
+                    break  # Blocked by own piece
+                r += dr
+                c += dc
+
 
     return moves
 
